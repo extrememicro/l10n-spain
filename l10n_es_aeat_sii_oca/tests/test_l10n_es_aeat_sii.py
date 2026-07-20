@@ -7,6 +7,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html)
 
 import json
+from datetime import datetime
 
 from odoo import exceptions
 from odoo.fields import Domain
@@ -180,6 +181,15 @@ class TestL10nEsAeatSii(TestL10nEsAeatSiiBase):
         )
         cls.tax_agencies = cls.env["aeat.tax.agency"].search(
             Domain("sii_wsdl_out", "!=", False)
+        )
+
+    def test_get_sii_sending_time_with_tzinfo(self):
+        self.company.send_mode = "fixed"
+        self.company.sent_time = 12.0
+        self.env.user.tz = "Europe/Madrid"
+        self.assertIsInstance(
+            self.company._get_sii_sending_time(),
+            datetime,
         )
 
     def test_invoice_search_sii_enabled(self):
